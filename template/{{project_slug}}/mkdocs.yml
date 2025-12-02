@@ -1,0 +1,34 @@
+site_name: "{{ project_name }}"
+site_description: "Documentación del proyecto {{ project_name }}"
+site_author: "Aldo Villagra"
+site_url: https://{{ github_user }}.github.io/{{ project_slug }}/
+repo_url: "https://github.com/{{ github_user }}/{{ project_slug }}"
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - content.code.copy
+    - toc.integrate
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            docstring_options:
+              ignore_init_summary: true
+            show_source: true
+            show_signature: true
+            separate_signature: true
+            members_order: alphabetical
+
+nav:
+  - Inicio: index.md
+  - Código:
+      - "{{ package_name }}": "reference/{{ package_name }}.md"
+  - Pruebas: tests.md

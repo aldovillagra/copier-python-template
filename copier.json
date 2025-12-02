@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "project_name": { "type": "string" },
+    "project_slug": { "type": "string" },
+    "package_name": { "type": "string" },
+    "python_version": { "type": "string" },
+    "create_dir_locals": { "type": "boolean" }
+  },
+  "required": ["project_name", "project_slug", "package_name"]
+}

@@ -1,0 +1,29 @@
+# copier.yml
+_min_copier_version: "9.0.0"
+_templates_suffix: ""
+_subdirectory: template
+
+# Preguntas al usuario
+project_name:
+  type: str
+  help: "Nombre del proyecto (ej: PGPerf, OdooToolkit)"
+
+project_slug:
+  type: str
+  default: "{{ project_name|lower|replace(' ', '-') }}"
+  help: "Slug del proyecto (ej: pgperf, odoo-toolkit)"
+
+package_name:
+  type: str
+  default: "{{ project_slug|replace('-', '_') }}"
+  help: "Nombre del paquete Python dentro de src/"
+
+python_version:
+  type: str
+  default: "3.12"
+  help: "Versión de Python para .python-version"
+
+create_dir_locals:
+  type: bool
+  default: true
+  help: "¿Generar dir-locals.el para Doom Emacs?"

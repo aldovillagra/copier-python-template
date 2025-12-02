@@ -1,0 +1,50 @@
+[project]
+name = "{{ project_slug }}"
+version = "0.1.0"
+description = "Proyecto {{ project_name }}"
+authors = [
+  { name = "Aldo A. Villagra B.", email = "aldovillagra@gmail.com" }
+]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">= {{ python_version }}"
+
+# src layout
+packages = [{ include = "{{ package_name }}", from = "src" }]
+
+dependencies = [
+    "typer",
+    "pydantic-settings",
+    "python-dotenv",
+    "rich",
+    "tomli>=2.0; python_version < '3.11'",  # en Python 3.12 ya no se usa
+]
+
+[dependency-groups]
+dev = [
+    "ruff",
+    "mypy",
+    "pytest",
+    "pytest-cov",
+    "pytest-xdist",
+    "pytest-mock",
+    "faker",
+    "hypothesis",
+    "mkdocs",
+    "mkdocs-material",
+    "mkdocstrings",
+    "mkdocstrings-python",
+]
+# UV usa este archivo como origen único
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"
+
+[build-system]
+requires = ["uv_build>=0.9.14,<1.0"]
+build-backend = "uv_build"
+
+# Script
+[project.scripts]
+{{ package_name }} = "{{ package_name }}.cli:app"
