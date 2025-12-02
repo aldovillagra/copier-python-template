@@ -24,6 +24,7 @@ dependencies = [
 dev = [
     "ruff",
     "mypy",
+    "isort",
     "pytest",
     "pytest-cov",
     "pytest-xdist",
