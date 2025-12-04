@@ -22,6 +22,7 @@ select = [
     "N",   # naming conventions
     "ASYNC",  # async issues
     "S",   # bandit (security)
+    "A",   # flake8-builtins (evita shadowing peligroso)
 ]
 
 # Ignorar reglas ruidosas que no aporta mucho
@@ -41,6 +42,8 @@ exclude = [
     "dist",
     "build",
     "__pycache__",
+    "docs",
+    "notebooks",
 ]
 
 
@@ -48,3 +51,8 @@ exclude = [
 [lint.isort]
 combine-as-imports = true
 force-single-line = false
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
