@@ -2,15 +2,14 @@
   "pythonVersion": "{{ python_version }}",
   "venv": ".venv",
   "pythonPath": ".venv/bin/python",
-  "venv": ".venv",
   "exclude": [
     "**/__pycache__",
     ".venv",
-    ".direnv"
+    ".direnv",
     ".git",
     ".direnv",
     "dist",
-    "build",
+    "build"
   ],
 
   "executionEnvironments": [
