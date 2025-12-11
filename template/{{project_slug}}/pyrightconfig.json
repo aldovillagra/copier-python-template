@@ -5,7 +5,6 @@
   "exclude": [
     "**/__pycache__",
     ".venv",
-    ".direnv",
     ".git",
     ".direnv",
     "dist",
