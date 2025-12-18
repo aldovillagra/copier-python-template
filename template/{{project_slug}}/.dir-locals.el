@@ -1,11 +1,11 @@
 ((python-mode
-  ;; Activar automáticamente .venv de uv
+  ;; Activar direnv (esto sí)
+  (eval . (direnv-update-environment))
+
+  ;; Python shell
   (python-shell-virtualenv-root . ".venv")
 
-  ;; Pyright: decirle dónde está el venv
-  (lsp-pyright-venv-path . ".")
-  (lsp-pyright-venv . ".venv")
-
-  ;; Activar direnv para cargar env vars
-  (eval . (direnv-update-environment))
-  ))
+  ;; Pyright: NO forzar venv aquí
+  ;; Pyright: NO tocar workspace folders
+  ;; Pyright: NO limitar clientes
+))

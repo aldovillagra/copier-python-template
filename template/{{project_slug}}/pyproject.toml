@@ -24,6 +24,8 @@ dependencies = [
 dev = [
     "ruff",
     "pyright",
+    "ipdb",
+    "ipython",
     "mypy",
     "isort",
     "ipython",
