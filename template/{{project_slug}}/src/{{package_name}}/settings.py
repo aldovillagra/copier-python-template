@@ -1,37 +1,32 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import tomllib
 
 
+class CompanySettings(BaseModel):
+    name: str = "Company Name"
+
 class Settings(BaseSettings):
-    """
-    Configuración principal del proyecto.
-
-    Esta clase carga, valida y proporciona acceso a todas las configuraciones
-    de la aplicación. Las fuentes de configuración, de menor a mayor prioridad:
-
-    1. Valores por defecto definidos aquí
-    2. Configuración desde el archivo .env
-    3. Variables de entorno del sistema
-    4. Configuración cargada manualmente desde archivos externos (TOML/JSON)
-    """
-
     # --------------------
     # CONFIG BÁSICA
     # --------------------
     debug: bool = False
-    database_url: str | None = None
-    workers: int = 4
-    log_level: str = "INFO"
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    company: CompanySettings = Field(default_factory=CompanySettings)
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        env_nested_delimiter="__",
+        extra="ignore",
+    )
 
 
 settings = Settings()
