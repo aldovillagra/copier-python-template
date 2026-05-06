@@ -2,11 +2,15 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Literal
-
+import typer
+import logging
+from logging import LogRecord
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import tomllib
+import tomli_w
+import sys
 
 
 class CompanySettings(BaseModel):
@@ -17,7 +21,8 @@ class Settings(BaseSettings):
     # CONFIG BÁSICA
     # --------------------
     debug: bool = False
-    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL",] = "INFO"
+    log_format: Literal["simple", "verbose"] = "simple"
 
     company: CompanySettings = Field(default_factory=CompanySettings)
 
@@ -27,9 +32,6 @@ class Settings(BaseSettings):
         env_nested_delimiter="__",
         extra="ignore",
     )
-
-
-settings = Settings()
 
 
 def load_extra_config(path: Path) -> None:
@@ -76,3 +78,63 @@ def load_extra_config(path: Path) -> None:
     # Extensiones no soportadas
     # --------------------
     raise ValueError(f"Formato de archivo no soportado: {suffix}")
+
+
+def bootstrap_settings(project_name: str) -> Settings:
+    path = Path.home() / f".{project_name}.toml"
+
+    if not path.exists():
+        settings = Settings()
+
+        toml_text = tomli_w.dumps(settings.model_dump(mode="json"))
+
+        typer.echo("Default config:\n")
+        typer.echo(toml_text)
+
+        if typer.confirm("Create config file?", default=True):
+            path.write_text(toml_text, encoding="utf-8")
+            typer.echo(f"Created: {path}")
+        else:
+            raise typer.Exit(1)
+
+    with path.open("rb") as f:
+        data = tomllib.load(f)
+
+    return Settings(**data)
+
+def get_settings(ctx: typer.Context) -> Settings:
+    return ctx.obj
+
+def setup_logging(settings) -> None:
+    level = "DEBUG" if settings.debug else settings.log_level
+
+    handlers: list[logging.Handler] = []
+
+    console_handler = logging.StreamHandler(sys.stderr)
+
+    if settings.log_format == "verbose":
+        formatter = logging.Formatter(
+            "%(asctime)s | %(levelname)-8s | %(name)s | "
+            "%(filename)s:%(lineno)d | %(message)s"
+        )
+    else:
+        formatter = logging.Formatter(
+            "%(levelname)s | %(message)s"
+        )
+
+    console_handler.setFormatter(formatter)
+    handlers.append(console_handler)
+
+    # if settings.log_file:
+    #     log_path = Path(settings.log_file)
+    #     log_path.parent.mkdir(parents=True, exist_ok=True)
+
+    #     file_handler = logging.FileHandler(log_path, encoding="utf-8")
+    #     file_handler.setFormatter(formatter)
+    #     handlers.append(file_handler)
+
+    logging.basicConfig(
+        level=level,
+        handlers=handlers,
+        force=True,
+    )
