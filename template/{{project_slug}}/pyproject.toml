@@ -21,6 +21,7 @@ dependencies = [
     "tomli-w>=1.2.0",
     "pandas[excel,output-formatting,performance]",
     "sqlalchemy",
+    "psycopg[binary]",
 ]
 
 [dependency-groups]

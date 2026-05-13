@@ -1,14 +1,14 @@
+#!/usr/bin/env python
 import pandas as pd
-from odepa.settings import PostgresSettings
+from {{package_name}}.settings import PostgresSettings
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
-from sqlalchemy.engine import URL
 
 
 class Db:
     def __init__(self, config: PostgresSettings):
         self.config = config
-        self.url = URL.create(self.config.sqlalchemy_url)
+        self.url = self.config.sqlalchemy_url
         self.engine = None
         self.connection = None
 
@@ -41,11 +41,7 @@ class Db:
         if not self.engine:
             self.engine = create_engine(
                 self.url,
-                pool_pre_ping=True,
-                pool_size=self.config.pool_size,
-                max_overflow=self.config.max_overflow,
-                pool_recycle=self.config.pool_recycle,
-                connect_args={"connect_timeout": self.config.connect_timeout},
+                **self.config.engine_kwargs,
             )
         if not self.connection:
             self.connection = self.engine.connect()

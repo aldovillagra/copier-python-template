@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal, Optional, Any
 import typer
 import logging
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -10,49 +10,65 @@ from dotenv import load_dotenv
 import tomllib
 import tomli_w
 import sys
+from sqlalchemy.engine import URL
 
 
 class CompanySettings(BaseModel):
     name: str = "Company Name"
 
-
 class PostgresSettings(BaseModel):
-    # Partes
     host: str = "localhost"
     port: int = 5432
     database: str = "postgres"
     user: str = "postgres"
     password: SecretStr = SecretStr("postgres")
 
-    # Opcional: DSN directo (si lo seteas, tiene prioridad)
     dsn: Optional[str] = ""
 
-    # Pool / tuning (útil para prod y pruebas)
+    # Driver / pool / tuning
+    driver: Literal["psycopg", "psycopg2"] = "psycopg"
+
     pool_size: int = 5
     max_overflow: int = 10
     pool_timeout: int = 30
-    connect_timeout: int = 10  # segundos
-    pool_recycle: int = 1800
-    sslmode: str = "allow"
+    pool_recycle: int = 1800  # segundos (30m)
 
-    @computed_field  # pydantic v2
+    # Conectividad
+    connect_timeout: int = 10  # segundos
+    sslmode: str = "allow"     # disable/allow/prefer/require/verify-ca/verify-full
+
+    pool_pre_ping: bool = True
+
+    @computed_field
     @property
     def sqlalchemy_url(self) -> str:
-        """
-        URL para SQLAlchemy (psycopg3).
-        Si =dsn= viene definido, se usa tal cual.
-        """
         if self.dsn:
             return self.dsn
 
-        pwd = self.password.get_secret_value()
-        # Nota: si tu password tiene caracteres raros, conviene url-encode.
-        return (
-            f"postgresql+psycopg://{self.user}:{pwd}"
-            f"@{self.host}:{self.port}/{self.database}"
-            f"?connect_timeout={self.connect_timeout}"
+        url = URL.create(
+            drivername=f"postgresql+{self.driver}",
+            username=self.user,
+            password=self.password.get_secret_value(),
+            host=self.host,
+            port=self.port,
+            database=self.database,
+            query={
+                "connect_timeout": str(self.connect_timeout),
+                "sslmode": self.sslmode,
+            },
         )
+        return url.render_as_string(hide_password=False)
 
+    @property
+    def engine_kwargs(self) -> dict[str, Any]:
+        return dict(
+            pool_size=self.pool_size,
+            max_overflow=self.max_overflow,
+            pool_timeout=self.pool_timeout,
+            pool_recycle=self.pool_recycle,
+            pool_pre_ping=self.pool_pre_ping,
+            future=True,
+        )
 
 class Settings(BaseSettings):
     # --------------------

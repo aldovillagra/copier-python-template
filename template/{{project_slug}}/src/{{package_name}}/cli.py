@@ -52,7 +52,7 @@ def info(ctx: typer.Context) -> None:
     """
     settings = get_settings(ctx)
     logger = logging.getLogger(__name__)
-    logger.info("CLI started")
+    logger.debug("CLI started")
     console.rule("[bold cyan]Configuración del Proyecto[/bold cyan]")
     console.print(settings.model_dump(mode="json"), highlight=True)
 
@@ -68,6 +68,8 @@ def run(
     Ejecuta el sistema principal del proyecto.
     """
     settings = get_settings(ctx)
+    logger = logging.getLogger(__name__)
+    logger.debug("CLI started")
     # Override del modo debug si se pasa por CLI
     if settings.debug is not False:
         import pdb; pdb.set_trace()
