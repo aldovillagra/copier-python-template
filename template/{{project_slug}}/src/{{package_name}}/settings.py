@@ -25,13 +25,15 @@ class PostgresSettings(BaseModel):
     password: SecretStr = SecretStr("postgres")
 
     # Opcional: DSN directo (si lo seteas, tiene prioridad)
-    dsn: Optional[str] = None
+    dsn: Optional[str] = ""
 
     # Pool / tuning (útil para prod y pruebas)
     pool_size: int = 5
     max_overflow: int = 10
     pool_timeout: int = 30
     connect_timeout: int = 10  # segundos
+    pool_recycle: int = 1800
+    sslmode: str = "allow"
 
     @computed_field  # pydantic v2
     @property
