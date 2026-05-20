@@ -9,9 +9,6 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">= {{ python_version }}"
 
-# src layout
-packages = [{ include = "{{ package_name }}", from = "src" }]
-
 dependencies = [
     "typer",
     "pydantic-settings",
@@ -44,16 +41,52 @@ dev = [
     "mkdocstrings",
     "mkdocstrings-python",
 ]
-# UV usa este archivo como origen único
-
-[tool.pytest.ini_options]
-pythonpath = ["src"]
-addopts = "-q"
-
-[build-system]
-requires = ["uv_build>=0.9.14,<1.0"]
-build-backend = "uv_build"
 
 # Script
 [project.scripts]
 {{ package_name }} = "{{ package_name }}.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov={{ package_name }}",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["{{ python_version }}"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 80
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+
+[tool.hatch.envs.test]
+installer = "uv"
+dependencies = [
+    "pytest",
+    "pytest-cov",
+]
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.12", "3.13", "3.14"]
+
+[tool.hatch.envs.test.scripts]
+run = "pytest"
+cov = "pytest --cov={{ python_version }} --cov-report=term-missing"
