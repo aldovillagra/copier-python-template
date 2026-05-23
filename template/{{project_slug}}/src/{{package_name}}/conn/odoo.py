@@ -8,7 +8,6 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 from {{package_name}}.settings import OdooSettings
-import pandas as pd
 
 
 class Odoo:
@@ -148,13 +147,14 @@ class Odoo:
             kwargs,
         )
 
-    def search(self, fields, model, domain) -> pd.DataFrame:
+    def search(self, fields, model, domain):
         resultado = self.execute_kw(
             model,
             "search_read",
             args=[domain],
             kwargs={"fields": fields},
         )
+        import pandas as pd
         return pd.DataFrame.from_records(resultado)
 
     def search_read_paged(

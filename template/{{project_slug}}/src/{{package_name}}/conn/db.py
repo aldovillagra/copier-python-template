@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-import pandas as pd
 from {{package_name}}.settings import PostgresSettings
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
@@ -52,6 +50,7 @@ class Db:
 
     def read_sql(self, SQL, parametros=None):
         self._connect()
+        import pandas as pd
         return pd.read_sql(SQL, params=parametros, con=self.engine)
 
     def get_conn(self):
