@@ -24,7 +24,7 @@ dependencies = [
     "rich",
     "tomli>=2.0; python_version < '3.11'",  # en Python 3.12 ya no se usa
     "tomli-w>=1.2.0",
-    "pandas[excel,output-formatting,performance]",
+    "pandas[excel,output-formatting,parquet,performance]",
     "sqlalchemy",
     "psycopg[binary]",
 ]
