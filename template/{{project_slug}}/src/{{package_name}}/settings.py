@@ -16,6 +16,14 @@ from sqlalchemy.engine import URL
 class CompanySettings(BaseModel):
     name: str = "Company Name"
 
+class OdooSettings(BaseModel):
+    host: str = "https://127.0.0.1"
+    port: int = 443
+    db: str = "DB_NAME_HERE"
+    username: str = "CHANGEME"
+    password: SecretStr = SecretStr("CHANGEME")
+    lang: str = "es_ES"
+
 class PostgresSettings(BaseModel):
     host: str = "localhost"
     port: int = 5432
@@ -80,7 +88,7 @@ class Settings(BaseSettings):
 
     company: CompanySettings = Field(default_factory=CompanySettings)
     postgres_prod: PostgresSettings = Field(default_factory=PostgresSettings)
-
+    odoo_prod: OdooSettings = Field(default_factory=OdooSettings)
 
     model_config = SettingsConfigDict(
         env_file=".env",
