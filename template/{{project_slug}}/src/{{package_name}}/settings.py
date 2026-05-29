@@ -10,73 +10,11 @@ from dotenv import load_dotenv
 import tomllib
 import tomli_w
 import sys
-from sqlalchemy.engine import URL
 
 
 class CompanySettings(BaseModel):
     name: str = "Company Name"
 
-class OdooSettings(BaseModel):
-    host: str = "https://127.0.0.1"
-    port: int = 443
-    db: str = "DB_NAME_HERE"
-    username: str = "CHANGEME"
-    password: SecretStr = SecretStr("CHANGEME")
-    lang: str = "es_ES"
-
-class PostgresSettings(BaseModel):
-    host: str = "localhost"
-    port: int = 5432
-    database: str = "postgres"
-    user: str = "postgres"
-    password: SecretStr = SecretStr("postgres")
-
-    dsn: Optional[str] = ""
-
-    # Driver / pool / tuning
-    driver: Literal["psycopg", "psycopg2"] = "psycopg"
-
-    pool_size: int = 5
-    max_overflow: int = 10
-    pool_timeout: int = 30
-    pool_recycle: int = 1800  # segundos (30m)
-
-    # Conectividad
-    connect_timeout: int = 10  # segundos
-    sslmode: str = "allow"     # disable/allow/prefer/require/verify-ca/verify-full
-
-    pool_pre_ping: bool = True
-
-    @computed_field
-    @property
-    def sqlalchemy_url(self) -> str:
-        if self.dsn:
-            return self.dsn
-
-        url = URL.create(
-            drivername=f"postgresql+{self.driver}",
-            username=self.user,
-            password=self.password.get_secret_value(),
-            host=self.host,
-            port=self.port,
-            database=self.database,
-            query={
-                "connect_timeout": str(self.connect_timeout),
-                "sslmode": self.sslmode,
-            },
-        )
-        return url.render_as_string(hide_password=False)
-
-    @property
-    def engine_kwargs(self) -> dict[str, Any]:
-        return dict(
-            pool_size=self.pool_size,
-            max_overflow=self.max_overflow,
-            pool_timeout=self.pool_timeout,
-            pool_recycle=self.pool_recycle,
-            pool_pre_ping=self.pool_pre_ping,
-            future=True,
-        )
 
 class Settings(BaseSettings):
     # --------------------
@@ -87,8 +25,6 @@ class Settings(BaseSettings):
     log_format: Literal["simple", "verbose"] = "simple"
 
     company: CompanySettings = Field(default_factory=CompanySettings)
-    postgres_prod: PostgresSettings = Field(default_factory=PostgresSettings)
-    odoo_prod: OdooSettings = Field(default_factory=OdooSettings)
 
     model_config = SettingsConfigDict(
         env_file=".env",

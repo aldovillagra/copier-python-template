@@ -6,8 +6,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
-
-from {{package_name}}.settings import OdooSettings
+from pydantic import BaseModel, SecretStr
 
 
 class Odoo:
@@ -250,3 +249,14 @@ class Odoo:
             function,
             datos,
         )
+
+class OdooSettings(BaseModel):
+    """
+    odoo_prod: OdooSettings = Field(default_factory=OdooSettings)
+    """
+    host: str = "https://127.0.0.1"
+    port: int = 443
+    db: str = "DB_NAME_HERE"
+    username: str = "CHANGEME"
+    password: SecretStr = SecretStr("CHANGEME")
+    lang: str = "es_ES"

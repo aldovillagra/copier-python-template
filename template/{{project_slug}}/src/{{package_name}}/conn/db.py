@@ -1,14 +1,13 @@
-from {{package_name}}.settings import PostgresSettings
-from sqlalchemy import create_engine
-from sqlalchemy.sql import text
-
+from pydantic import BaseModel
 
 class Db:
     def __init__(self, config: PostgresSettings):
         self.config = config
         self.url = self.config.sqlalchemy_url
         self.engine = None
-        self.connection = None
+        from sqlalchemy import Connection
+
+        self.connection: Connection
 
     def _create_sql(self, fields, model, domains=None):
         texto = "SELECT "
@@ -33,10 +32,14 @@ class Db:
                     texto += " AND "
         if "id" in fields:
             texto += " ORDER BY id ASC"
+        from sqlalchemy.sql import text
+
         return text(texto), params
 
     def _connect(self):
         if not self.engine:
+            from sqlalchemy import create_engine
+
             self.engine = create_engine(
                 self.url,
                 **self.config.engine_kwargs,
@@ -51,6 +54,7 @@ class Db:
     def read_sql(self, SQL, parametros=None):
         self._connect()
         import pandas as pd
+
         return pd.read_sql(SQL, params=parametros, con=self.engine)
 
     def get_conn(self):
@@ -58,6 +62,8 @@ class Db:
         return self.engine
 
     def exec_string(self, sql):
+        from sqlalchemy.sql import text
+
         self.exec(text(sql))
 
     def exec(self, sql):
@@ -70,3 +76,60 @@ class Db:
 
     #     template = env.get_template(name)
     #     return text(template.render())
+
+class PostgresSettings(BaseModel):
+    """
+    postgres_prod: PostgresSettings = Field(default_factory=PostgresSettings)
+    """
+    host: str = "localhost"
+    port: int = 5432
+    database: str = "postgres"
+    user: str = "postgres"
+    password: SecretStr = SecretStr("postgres")
+
+    dsn: Optional[str] = ""
+
+    # Driver / pool / tuning
+    driver: Literal["psycopg", "psycopg2"] = "psycopg"
+
+    pool_size: int = 5
+    max_overflow: int = 10
+    pool_timeout: int = 30
+    pool_recycle: int = 1800  # segundos (30m)
+
+    # Conectividad
+    connect_timeout: int = 10  # segundos
+    sslmode: str = "allow"     # disable/allow/prefer/require/verify-ca/verify-full
+
+    pool_pre_ping: bool = True
+
+    @computed_field
+    @property
+    def sqlalchemy_url(self) -> str:
+        if self.dsn:
+            return self.dsn
+
+        url = URL.create(
+            drivername=f"postgresql+{self.driver}",
+            username=self.user,
+            password=self.password.get_secret_value(),
+            host=self.host,
+            port=self.port,
+            database=self.database,
+            query={
+                "connect_timeout": str(self.connect_timeout),
+                "sslmode": self.sslmode,
+            },
+        )
+        return url.render_as_string(hide_password=False)
+
+    @property
+    def engine_kwargs(self) -> dict[str, Any]:
+        return dict(
+            pool_size=self.pool_size,
+            max_overflow=self.max_overflow,
+            pool_timeout=self.pool_timeout,
+            pool_recycle=self.pool_recycle,
+            pool_pre_ping=self.pool_pre_ping,
+            future=True,
+        )
