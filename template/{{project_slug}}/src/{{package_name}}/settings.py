@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     debug: bool = False
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL",] = "INFO"
     log_format: Literal["simple", "verbose"] = "simple"
+    log_dir: str = "logs"
+    log_file: str = ""
 
     company: CompanySettings = Field(default_factory=CompanySettings)
 
@@ -105,11 +107,10 @@ def bootstrap_settings(project_name: str) -> Settings:
 def get_settings(ctx: typer.Context) -> Settings:
     return ctx.obj
 
-def setup_logging(settings) -> None:
+def setup_logging(settings: Settings):
     level = "DEBUG" if settings.debug else settings.log_level
 
     handlers: list[logging.Handler] = []
-
     console_handler = logging.StreamHandler(sys.stderr)
 
     if settings.log_format == "verbose":
@@ -118,23 +119,35 @@ def setup_logging(settings) -> None:
             "%(filename)s:%(lineno)d | %(message)s"
         )
     else:
-        formatter = logging.Formatter(
-            "%(levelname)s | %(message)s"
-        )
+        formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
 
     console_handler.setFormatter(formatter)
     handlers.append(console_handler)
 
-    # if settings.log_file:
-    #     log_path = Path(settings.log_file)
-    #     log_path.parent.mkdir(parents=True, exist_ok=True)
+    # Si no esta definido log dir y log_file, se define por defecto en
+    if not settings.log_dir:
+        settings.log_dir = "logs"
+    if not settings.log_file:
+        settings.log_file = f"{settings.log_dir}/{datetime.now():%Y%m%d_%H%M}.log"
 
-    #     file_handler = logging.FileHandler(log_path, encoding="utf-8")
-    #     file_handler.setFormatter(formatter)
-    #     handlers.append(file_handler)
+    if settings.log_file and str(settings.log_file).strip():
+        log_path = Path(settings.log_file).expanduser().resolve()
+        if log_path.exists() and log_path.is_dir():
+            raise ValueError(
+                f"log_file apunta a un directorio, no a un archivo: {log_path}"
+            )
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+
+        file_handler = logging.FileHandler(
+            log_path,
+            encoding="utf-8",
+        )
+        file_handler.setFormatter(formatter)
+        handlers.append(file_handler)
 
     logging.basicConfig(
         level=level,
         handlers=handlers,
         force=True,
     )
+    return logging
