@@ -27,6 +27,7 @@ dependencies = [
     "pandas[excel,output-formatting,parquet,performance]",
     "sqlalchemy",
     "psycopg[binary]",
+    "paramiko>=5.0.0",
 ]
 
 [dependency-groups]
