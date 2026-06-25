@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Literal, Optional, Any
-import typer
 import logging
-from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import BaseModel, Field, SecretStr, computed_field
-from dotenv import load_dotenv
-import tomllib
-import tomli_w
 import sys
+import tomllib
+from datetime import datetime
+from pathlib import Path
+from typing import Literal
 
+import tomli_w
+import typer
+from dotenv import load_dotenv
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class CompanySettings(BaseModel):
     name: str = "Company Name"
