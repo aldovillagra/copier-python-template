@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr, computed_field
 
 class Db:
     def __init__(self, config: PostgresSettings):
