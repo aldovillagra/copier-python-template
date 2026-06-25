@@ -1,3 +1,5 @@
+from typing import Literal, Optional
+
 from pydantic import BaseModel, SecretStr, computed_field
 
 class Db:
@@ -108,6 +110,8 @@ class PostgresSettings(BaseModel):
     def sqlalchemy_url(self) -> str:
         if self.dsn:
             return self.dsn
+
+        from sqlalchemy import URL
 
         url = URL.create(
             drivername=f"postgresql+{self.driver}",
