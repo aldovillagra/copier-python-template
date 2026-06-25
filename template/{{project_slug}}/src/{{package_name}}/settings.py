@@ -10,7 +10,7 @@ from typing import Literal
 import tomli_w
 import typer
 from dotenv import load_dotenv
-from pydantic import Field
+from pydantic import Field, BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class CompanySettings(BaseModel):
