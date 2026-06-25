@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
 import logging
 
 import typer
 from rich.console import Console
 
-from typing import Optional
-from typing_extensions import Annotated
+from typing import Optional, Annotated
 from .settings import bootstrap_settings, get_settings, setup_logging
 
 console = Console()
