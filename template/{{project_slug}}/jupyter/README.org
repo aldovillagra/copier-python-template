@@ -2,7 +2,7 @@
 
 * Install
 #+begin_src sh
-uv add jupyterlab ipykernel
+uv add --group dev jupyterlab ipykernel
 #+end_src
 * Check
 #+begin_src sh
