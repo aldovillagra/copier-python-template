@@ -70,8 +70,7 @@ def run(
     logger.debug("CLI started")
     # Override del modo debug si se pasa por CLI
     if settings.debug is not False:
-        import pdb; pdb.set_trace()
-
+        breakpoint()
 
     console.rule("[bold green]Iniciando Sistema[/bold green]")
     console.print(settings.model_dump())
