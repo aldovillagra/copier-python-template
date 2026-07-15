@@ -35,6 +35,7 @@ dev = [
     "ruff",
     "pyright",
     "ipdb",
+    "debugpy",
     "ipython",
     "ptpython",
     "mypy",
