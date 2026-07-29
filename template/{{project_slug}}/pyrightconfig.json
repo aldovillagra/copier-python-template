@@ -1,7 +1,6 @@
 {
   "pythonVersion": "{{ python_version }}",
   "venv": ".venv",
-  "pythonPath": ".venv/bin/python",
   "exclude": [
     "**/__pycache__",
     ".venv",
