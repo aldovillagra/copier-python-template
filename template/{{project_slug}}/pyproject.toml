@@ -19,13 +19,11 @@ classifiers = [
 
 dependencies = [
     "pydantic-settings>=2.15",
-    "bitr-toolkit",
+    "bitr-toolkit>=0.1.0",
 ]
 
 [tool.uv.sources]
-bitr-toolkit = {
-    git = "https://github.com/aldovillagra/bitr-toolkit.git",
-}
+bitr-toolkit = { git = "https://github.com/aldovillagra/bitr-toolkit.git", tag = "v0.1.0" }
 
 [dependency-groups]
 dev = [
