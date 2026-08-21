@@ -18,17 +18,14 @@ classifiers = [
 ]
 
 dependencies = [
-    "typer",
-    "pydantic-settings",
-    "python-dotenv",
-    "rich",
-    "tomli>=2.0; python_version < '3.11'",  # en Python 3.12 ya no se usa
-    "tomli-w>=1.2.0",
-    "pandas[excel,output-formatting,parquet,performance]",
-    "sqlalchemy",
-    "psycopg[binary]",
-    "paramiko>=5.0.0",
+    "pydantic-settings>=2.15",
+    "bitr-toolkit",
 ]
+
+[tool.uv.sources]
+bitr-toolkit = {
+    git = "https://github.com/aldovillagra/bitr-toolkit.git",
+}
 
 [dependency-groups]
 dev = [
@@ -55,7 +52,7 @@ dev = [
 
 # Script
 [project.scripts]
-{{ package_name }} = "{{ package_name }}.cli:app"
+{{ package_name }} = "{{ package_name }}.cli.app:app"
 
 [build-system]
 requires = ["hatchling"]

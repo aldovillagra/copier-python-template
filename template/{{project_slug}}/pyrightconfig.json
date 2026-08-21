@@ -1,13 +1,20 @@
 {
   "pythonVersion": "{{ python_version }}",
   "venv": ".venv",
+  "include": [
+    "src",
+    "tests"
+  ],
   "exclude": [
-    "**/__pycache__",
     ".venv",
     ".git",
     ".direnv",
+    "**/__pycache__",
+    "build",
     "dist",
-    "build"
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache"
   ],
 
   "executionEnvironments": [
@@ -18,5 +25,6 @@
 
   "reportMissingImports": true,
   "reportMissingTypeStubs": false,
-  "useLibraryCodeForTypes": true
+  "useLibraryCodeForTypes": true,
+  "verboseOutput": true
 }
