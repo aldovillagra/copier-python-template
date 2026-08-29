@@ -31,7 +31,6 @@ dev = [
     "pyright",
     "ipdb",
     "debugpy",
-    "ipython",
     "ptpython",
     "mypy",
     "isort",
