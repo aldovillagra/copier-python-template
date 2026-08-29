@@ -71,7 +71,7 @@ pythonpath = ["src"]
 
 [tool.coverage.run]
 branch = true
-source = ["{{ python_version }}"]
+source = ["{{ package_name }}"]
 
 [tool.coverage.report]
 show_missing = true
@@ -91,7 +91,7 @@ dependencies = [
 ]
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.12", "3.13", "3.14"]
+python = ["{{ python_version }}"]
 
 [tool.hatch.envs.test.scripts]
 run = "pytest"
